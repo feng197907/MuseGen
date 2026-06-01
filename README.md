@@ -55,7 +55,7 @@ cp .env.example .env
 ### 2. 使用 Docker Compose 启动
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 服务启动后：
