@@ -1,5 +1,4 @@
-"""Character consistency service using IP-Adapter parameter encapsulation."""
-from typing import Optional
+"""Character consistency service — IP-Adapter parameter encapsulation."""
 from app.services.image_service import generate_image_with_reference
 
 
@@ -8,16 +7,7 @@ def build_consistency_params(
     ip_adapter_scale: float = 0.6,
     controlnet_scale: float = 0.5,
 ) -> dict:
-    """Build IP-Adapter + ControlNet parameters for character-consistent generation.
-
-    Args:
-        character_image_url: URL of the character reference image.
-        ip_adapter_scale: Weight of IP-Adapter reference (0-1).
-        controlnet_scale: Weight of ControlNet conditioning (0-1).
-
-    Returns:
-        Dict of parameters to merge into the image generation payload.
-    """
+    """Build IP-Adapter + ControlNet parameters for character-consistent generation."""
     return {
         "ip_adapter_image": character_image_url,
         "ip_adapter_scale": ip_adapter_scale,
@@ -33,19 +23,7 @@ def generate_consistent_keyframe(
     width: int = 1024,
     height: int = 576,
 ) -> bytes:
-    """Generate a keyframe with character consistency via IP-Adapter.
-
-    Args:
-        prompt: Shot prompt.
-        character_image_url: Character reference image URL.
-        negative_prompt: Negative prompt.
-        ip_adapter_scale: Consistency strength.
-        width: Output width.
-        height: Output height.
-
-    Returns:
-        Raw image bytes.
-    """
+    """Generate a keyframe with character consistency via IP-Adapter."""
     return generate_image_with_reference(
         prompt=prompt,
         reference_image_url=character_image_url,
