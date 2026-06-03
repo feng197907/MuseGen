@@ -37,9 +37,9 @@ const GenerationPanel: React.FC = () => {
     enabled: isRunning,
     onMessage: (evt) => {
       setProgress(evt.progress)
-      setCurrentStep(evt.message || evt.currentStep)
+      setCurrentStep(evt.message || evt.current_step)
       // Map task type to phase index
-      const idx = TASK_PHASES.findIndex((p) => p.key === evt.taskType)
+      const idx = TASK_PHASES.findIndex((p) => p.key === evt.task_type)
       if (idx !== -1) setPhaseIdx(idx)
 
       if (evt.status === 'done') {
@@ -58,8 +58,8 @@ const GenerationPanel: React.FC = () => {
     setIsLaunching(true)
     try {
       const task = await generateApi.fullPipeline({
-        projectId: currentProject.id,
-        storyText: currentProject.storyText,
+        project_id: currentProject.id,
+        story_text: currentProject.story_text,
       })
       setActiveTask(task)
       setProgress(0)

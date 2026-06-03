@@ -1,5 +1,6 @@
 """Celery Task: Generate keyframes for each shot via SDXL + IP-Adapter."""
 import asyncio
+import logging
 from app.tasks.celery_app import celery_app
 from app.services.consistency_service import generate_consistent_keyframe
 from app.services.image_service import generate_image
@@ -106,31 +107,41 @@ async def _generate_keyframes(task_id: str, project_id: str, shot_ids: list):
                     character_image_url=primary_ref_url,
                     negative_prompt=negative_prompt,
                     ip_adapter_scale=0.6,
-                    width=1024,
-                    height=576,
+                    width=512,
+                    height=512,
                 )
             else:
                 image_bytes = generate_image(
                     prompt=prompt,
                     negative_prompt=negative_prompt,
-                    width=1024,
-                    height=576,
+                    width=512,
+                    height=512,
                 )
 
             # Upload
             url = upload_bytes(image_bytes, project_id, "keyframe", "png", "image/png")
 
-            # Save keyframe to DB
+            # Save keyframe to DB (upsert — update if exists, insert if new)
             async with async_session_factory() as session:
-                kf = KeyFrame(
-                    shot_id=shot.id,
-                    image_url=url,
-                    thumbnail_url=url,
-                    prompt=prompt,
-                    width=1024,
-                    height=576,
-                )
-                session.add(kf)
+                kf_stmt = select(KeyFrame).where(KeyFrame.shot_id == shot.id)
+                kf_result = await session.execute(kf_stmt)
+                existing_kf = kf_result.scalar_one_or_none()
+                if existing_kf:
+                    existing_kf.image_url = url
+                    existing_kf.thumbnail_url = url
+                    existing_kf.prompt = prompt
+                    existing_kf.width = 512
+                    existing_kf.height = 512
+                else:
+                    kf = KeyFrame(
+                        shot_id=shot.id,
+                        image_url=url,
+                        thumbnail_url=url,
+                        prompt=prompt,
+                        width=512,
+                        height=512,
+                    )
+                    session.add(kf)
 
                 # Update shot status
                 shot_stmt = select(Shot).where(Shot.id == shot.id)
@@ -142,6 +153,9 @@ async def _generate_keyframes(task_id: str, project_id: str, shot_ids: list):
                 await session.commit()
 
         except Exception as e:
+            logging.getLogger(__name__).error(
+                f"Keyframe generation failed for shot {shot.id} ({shot.title}): {e}", exc_info=True
+            )
             async with async_session_factory() as session:
                 shot_stmt = select(Shot).where(Shot.id == shot.id)
                 shot_result = await session.execute(shot_stmt)

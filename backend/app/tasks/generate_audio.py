@@ -1,8 +1,9 @@
 """Celery Task: Generate audio/dubbing for each shot using TTS."""
 import asyncio
 from app.tasks.celery_app import celery_app
-from app.services.tts_service import synthesize_elevenlabs, synthesize_volcano
+from app.services.tts_service import synthesize_elevenlabs, synthesize_volcano, synthesize
 from app.core.storage import upload_bytes
+from app.core.config import settings
 from app.utils.progress import update_progress
 from app.core.database import async_session_factory
 from app.models.storyboard import Shot
@@ -75,8 +76,15 @@ async def _generate_audio_tracks(task_id: str, project_id: str, shot_ids: list):
                         provider = char.voice_profile.provider
                         voice_settings = char.voice_profile.settings or {}
 
-            # Synthesize
-            if provider == "volcano":
+            # Synthesize — use GPU mode (CosyVoice) when AI_BACKEND is "gpu"
+            if settings.AI_BACKEND == "gpu":
+                audio_bytes = synthesize(
+                    text=shot.dialogue,
+                    voice_id=voice_id if provider != "elevenlabs" else "default",
+                    speed=voice_settings.get("speed", 1.0),
+                    provider="elevenlabs",  # ignored in gpu mode
+                )
+            elif provider == "volcano":
                 audio_bytes = synthesize_volcano(shot.dialogue)
             else:
                 audio_bytes = synthesize_elevenlabs(

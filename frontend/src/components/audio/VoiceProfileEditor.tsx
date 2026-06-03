@@ -43,9 +43,9 @@ const VoiceProfileEditor: React.FC<VoiceProfileEditorProps> = ({ character, voic
   const { control, handleSubmit } = useForm<VoiceFormValues>({
     defaultValues: {
       provider: voiceProfile?.provider || 'elevenlabs',
-      voiceId: voiceProfile?.voiceId || '',
+      voiceId: voiceProfile?.voice_id || '',
       stability: voiceProfile?.settings.stability ?? 0.5,
-      similarityBoost: voiceProfile?.settings.similarityBoost ?? 0.75,
+      similarityBoost: voiceProfile?.settings.similarity_boost ?? 0.75,
       style: voiceProfile?.settings.style ?? 0,
       speed: voiceProfile?.settings.speed ?? 1,
     },
@@ -54,7 +54,7 @@ const VoiceProfileEditor: React.FC<VoiceProfileEditorProps> = ({ character, voic
   const onSubmit = (values: VoiceFormValues) => {
     const { provider, voiceId, ...settings } = values
     onSave({
-      characterId: character.id,
+      character_id: character.id,
       provider,
       voiceId,
       settings: settings as VoiceSettings,

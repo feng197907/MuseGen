@@ -15,7 +15,7 @@ export function buildShotPrompt(
   parts.push('anime style, high quality, detailed illustration')
 
   // Characters
-  const shotChars = characters.filter((c) => shot.characterIds.includes(c.id))
+  const shotChars = characters.filter((c) => shot.character_ids.includes(c.id))
   if (shotChars.length > 0) {
     const charDescs = shotChars.map((c) => c.appearance).join(', ')
     parts.push(charDescs)
@@ -23,8 +23,8 @@ export function buildShotPrompt(
 
   // Scene
   if (scene) {
-    parts.push(scene.referencePrompt || scene.description)
-    if (scene.timeOfDay) parts.push(scene.timeOfDay)
+    parts.push(scene.reference_prompt || scene.description)
+    if (scene.time_of_day) parts.push(scene.time_of_day)
     if (scene.weather) parts.push(scene.weather)
   }
 
@@ -42,8 +42,8 @@ export function buildShotPrompt(
     特写: 'close-up',
     极特写: 'extreme close-up',
   }
-  if (shotTypeMap[shot.shotType]) {
-    parts.push(shotTypeMap[shot.shotType])
+  if (shotTypeMap[shot.shot_type]) {
+    parts.push(shotTypeMap[shot.shot_type])
   }
 
   // Mood → lighting hint

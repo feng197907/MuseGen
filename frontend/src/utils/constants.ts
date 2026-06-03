@@ -2,7 +2,7 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 // SSE base URL
-export const SSE_BASE_URL = import.meta.env.VITE_SSE_BASE_URL || '/sse'
+export const SSE_BASE_URL = import.meta.env.VITE_SSE_BASE_URL || '/api/v1/sse'
 
 // Maximum undo/redo stack depth
 export const MAX_UNDO_STACK = 20

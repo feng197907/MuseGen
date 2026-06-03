@@ -11,18 +11,18 @@ export type TaskType =
 
 export interface AsyncTask {
   id: string
-  projectId: string
-  taskType: TaskType
+  project_id: string
+  task_type: TaskType
   status: TaskStatus
   progress: number
-  currentStep: string
-  errorMessage: string | null
-  inputData: Record<string, unknown>
-  outputData: Record<string, unknown>
-  createdAt: string
-  startedAt: string | null
-  finishedAt: string | null
-  parentTaskId: string | null
+  current_step: string
+  error_message: string | null
+  input_data: Record<string, unknown>
+  output_data: Record<string, unknown>
+  created_at: string
+  started_at: string | null
+  finished_at: string | null
+  parent_task_id: string | null
 }
 
 /** API unified response envelope */
@@ -34,10 +34,10 @@ export interface ApiResponse<T = unknown> {
 
 /** SSE progress event */
 export interface SSEProgressEvent {
-  taskId: string
-  taskType: TaskType
+  task_id: string
+  task_type: TaskType
   status: TaskStatus
   progress: number
-  currentStep: string
+  current_step: string
   message: string
 }

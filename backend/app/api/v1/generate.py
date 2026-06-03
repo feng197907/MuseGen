@@ -94,14 +94,18 @@ async def full_pipeline(body: FullPipelineRequest, db: AsyncSession = Depends(ge
     task = await _create_task(db, body.project_id, TaskType.full_pipeline, body.model_dump())
 
     # Chain: parse → assets → keyframes → animation → audio → compose
+    # .si() (immutable) prevents Celery from prepending the previous task's
+    # return value, so each task gets exactly the args specified.
     from celery import chain
+    tid = str(task.id)
+    pid = body.project_id
     pipeline = chain(
-        run_parse_story.s(str(task.id), body.project_id, body.story_text),
-        run_generate_assets.s(),
-        run_generate_keyframes.s(),
-        run_generate_animation.s(),
-        run_generate_audio.s(),
-        run_compose_video.s(),
+        run_parse_story.s(tid, pid, body.story_text),
+        run_generate_assets.si(tid, pid),
+        run_generate_keyframes.si(tid, pid),
+        run_generate_animation.si(tid, pid),
+        run_generate_audio.si(tid, pid),
+        run_compose_video.si(tid, pid),
     )
     pipeline.apply_async()
     return ApiResponse(data=AsyncTaskResponse.model_validate(task))

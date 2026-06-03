@@ -51,7 +51,7 @@ const SceneGrid: React.FC<SceneGridProps> = ({ scenes, onSelect }) => {
               <CardMedia
                 component="img"
                 height={140}
-                image={scene.imageUrl || scene.thumbnailUrl || '/placeholder-scene.jpg'}
+                image={scene.image_url || scene.thumbnail_url || '/placeholder-scene.jpg'}
                 alt={scene.name}
                 sx={{ objectFit: 'cover', bgcolor: 'rgba(139,92,246,0.05)' }}
               />
@@ -71,8 +71,8 @@ const SceneGrid: React.FC<SceneGridProps> = ({ scenes, onSelect }) => {
                   {scene.setting}
                 </Typography>
                 <Stack direction="row" spacing={0.5} sx={{ mt: 0.75, flexWrap: 'wrap' }}>
-                  {scene.timeOfDay && (
-                    <Chip label={scene.timeOfDay} size="small" sx={{ height: 18, fontSize: 10 }} />
+                  {scene.time_of_day && (
+                    <Chip label={scene.time_of_day} size="small" sx={{ height: 18, fontSize: 10 }} />
                   )}
                   {scene.weather && (
                     <Chip label={scene.weather} size="small" sx={{ height: 18, fontSize: 10 }} />

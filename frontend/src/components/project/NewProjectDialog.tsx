@@ -23,7 +23,7 @@ const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ open, onClose, onSu
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ProjectCreateRequest>({
-    defaultValues: { name: '', description: '', storyText: '' },
+    defaultValues: { name: '', description: '', story_text: '' },
   })
 
   const handleFormSubmit = (data: ProjectCreateRequest) => {
@@ -67,7 +67,7 @@ const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ open, onClose, onSu
             )}
           />
           <Controller
-            name="storyText"
+            name="story_text"
             control={control}
             render={({ field }) => (
               <TextField

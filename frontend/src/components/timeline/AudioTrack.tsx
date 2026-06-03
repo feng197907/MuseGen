@@ -25,7 +25,7 @@ const TRACK_TYPE_LABEL: Record<string, string> = {
 const AudioTrack: React.FC<AudioTrackProps> = ({ track, totalDuration, onVolumeChange }) => {
   const pixelsPerSecond = totalDuration > 0 ? 600 / totalDuration : 40
 
-  const clipLeft = track.startTime * pixelsPerSecond
+  const clipLeft = track.start_time * pixelsPerSecond
   const clipWidth = Math.max(track.duration * pixelsPerSecond, 20)
 
   const isMuted = track.volume === 0

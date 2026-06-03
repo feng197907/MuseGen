@@ -1,57 +1,57 @@
 /** Character asset — an anime character with reference image */
 export interface Character {
   id: string
-  projectId: string
+  project_id: string
   name: string
   description: string
   appearance: string
   personality: string
-  imageUrl: string | null
-  thumbnailUrl: string | null
-  referencePrompt: string
-  voiceProfileId: string | null
+  image_url: string | null
+  thumbnail_url: string | null
+  reference_prompt: string
+  voice_profile_id: string | null
   status: 'pending' | 'generating' | 'done' | 'failed'
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 /** Scene / background asset */
 export interface Scene {
   id: string
-  projectId: string
+  project_id: string
   name: string
   description: string
   setting: string
-  timeOfDay: string
+  time_of_day: string
   weather: string
-  imageUrl: string | null
-  thumbnailUrl: string | null
-  referencePrompt: string
+  image_url: string | null
+  thumbnail_url: string | null
+  reference_prompt: string
   status: 'pending' | 'generating' | 'done' | 'failed'
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 /** Keyframe generated for a shot */
 export interface KeyFrame {
   id: string
-  shotId: string
-  imageUrl: string
-  thumbnailUrl: string
+  shot_id: string
+  image_url: string
+  thumbnail_url: string
   prompt: string
   width: number
   height: number
-  createdAt: string
+  created_at: string
 }
 
 /** Animation clip generated from a keyframe */
 export interface Animation {
   id: string
-  keyframeId: string
-  videoUrl: string
+  keyframe_id: string
+  video_url: string
   duration: number
   fps: number
-  createdAt: string
+  created_at: string
 }
 
 export type AssetStatus = 'pending' | 'generating' | 'done' | 'failed'

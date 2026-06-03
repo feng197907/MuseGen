@@ -1,4 +1,11 @@
 """Celery worker entry point."""
+import sys
+import asyncio
+
+# Windows compatibility for psycopg async
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 from app.tasks.celery_app import celery_app  # noqa: F401
 # Import all tasks to register them with Celery
 import app.tasks.parse_story  # noqa: F401

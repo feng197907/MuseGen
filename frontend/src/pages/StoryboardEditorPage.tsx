@@ -94,7 +94,7 @@ const StoryboardEditorPage: React.FC = () => {
   const handleReorder = async (orderedIds: string[]) => {
     reorderShots(orderedIds)
     try {
-      await storyboardApi.reorderShots({ shotIds: orderedIds })
+      await storyboardApi.reorderShots({ shot_ids: orderedIds })
     } catch {
       // revert on failure: refetch
     }
@@ -193,7 +193,7 @@ const StoryboardEditorPage: React.FC = () => {
           bgcolor: 'rgba(0,0,0,0.2)',
         }}
       >
-        {selectedShot && selectedShot.keyframeId ? (
+        {selectedShot && selectedShot.keyframe_id ? (
           <Box
             sx={{
               width: '100%',
@@ -207,7 +207,7 @@ const StoryboardEditorPage: React.FC = () => {
             }}
           >
             <img
-              src={`/api/v1/assets/keyframes/${selectedShot.keyframeId}/image`}
+              src={`/api/v1/assets/keyframes/${selectedShot.keyframe_id}/image`}
               alt={`Shot ${selectedShot.order + 1}`}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />

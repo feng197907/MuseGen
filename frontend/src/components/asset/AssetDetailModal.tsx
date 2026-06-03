@@ -52,7 +52,7 @@ const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
       </DialogTitle>
       <DialogContent>
         {/* Image preview */}
-        {asset.imageUrl && (
+        {asset.image_url && (
           <Box
             sx={{
               width: '100%',
@@ -64,7 +64,7 @@ const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
             }}
           >
             <img
-              src={asset.imageUrl}
+              src={asset.image_url}
               alt={asset.name}
               style={{ width: '100%', height: 280, objectFit: 'cover' }}
             />
@@ -113,8 +113,8 @@ const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
                 </Typography>
               </Box>
               <Stack direction="row" spacing={1}>
-                {(asset as Scene).timeOfDay && (
-                  <Chip label={(asset as Scene).timeOfDay} size="small" />
+                {(asset as Scene).time_of_day && (
+                  <Chip label={(asset as Scene).time_of_day} size="small" />
                 )}
                 {(asset as Scene).weather && (
                   <Chip label={(asset as Scene).weather} size="small" />
@@ -141,7 +141,7 @@ const AssetDetailModal: React.FC<AssetDetailModalProps> = ({
                 wordBreak: 'break-all',
               }}
             >
-              {asset.referencePrompt || '待生成'}
+              {asset.reference_prompt || '待生成'}
             </Typography>
           </Box>
 

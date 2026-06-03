@@ -59,7 +59,7 @@ const ExportPage: React.FC = () => {
     enabled: isRunning,
     onMessage: (evt) => {
       setProgress(evt.progress)
-      setProgressStep(evt.message || evt.currentStep)
+      setProgressStep(evt.message || evt.current_step)
       if (evt.status === 'done') {
         setExportTask((prev) => prev ? { ...prev, status: 'done' } : prev)
         setDownloadUrl(exportApi.getDownloadUrl(exportTask!.id))

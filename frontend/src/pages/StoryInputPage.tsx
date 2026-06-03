@@ -29,7 +29,7 @@ const StoryInputPage: React.FC = () => {
   const currentProject = useProjectStore((s) => s.currentProject)
   const updateProject = useProjectStore((s) => s.updateProject)
 
-  const [storyText, setStoryText] = useState(currentProject?.storyText || '')
+  const [storyText, setStoryText] = useState(currentProject?.story_text || '')
   const [activeTask, setActiveTask] = useState<AsyncTask | null>(null)
   const [sseProgress, setSseProgress] = useState(0)
   const [sseStep, setSseStep] = useState('')
@@ -42,7 +42,7 @@ const StoryInputPage: React.FC = () => {
     enabled: isRunning,
     onMessage: (evt) => {
       setSseProgress(evt.progress)
-      setSseStep(evt.message || evt.currentStep)
+      setSseStep(evt.message || evt.current_step)
       if (evt.status === 'done') {
         setActiveTask((prev) => prev ? { ...prev, status: 'done' } : prev)
         // Refresh project info
@@ -60,8 +60,8 @@ const StoryInputPage: React.FC = () => {
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!projectId) throw new Error('No project ID')
-      await projectApi.update(projectId, { storyText })
-      updateProject(projectId, { storyText })
+      await projectApi.update(projectId, { story_text: storyText })
+      updateProject(projectId, { story_text: storyText })
     },
   })
 
@@ -69,10 +69,10 @@ const StoryInputPage: React.FC = () => {
     mutationFn: async () => {
       if (!projectId) throw new Error('No project ID')
       // Save first
-      await projectApi.update(projectId, { storyText })
-      updateProject(projectId, { storyText })
+      await projectApi.update(projectId, { story_text: storyText })
+      updateProject(projectId, { story_text: storyText })
       // Then trigger parse
-      return generateApi.parseStory({ projectId, storyText })
+      return generateApi.parseStory({ project_id: projectId, story_text: storyText })
     },
     onSuccess: (task) => {
       setActiveTask(task)
@@ -80,7 +80,12 @@ const StoryInputPage: React.FC = () => {
       setSseProgress(0)
     },
     onError: (e: any) => {
-      setParseError(e.message || '启动解析失败')
+      const msg = e?.response?.data?.detail
+        ? (Array.isArray(e.response.data.detail)
+            ? e.response.data.detail.map((d: any) => d.msg || JSON.stringify(d)).join('; ')
+            : e.response.data.detail)
+        : (e?.message || '启动解析失败')
+      setParseError(msg)
     },
   })
 

@@ -69,7 +69,7 @@ const ShotDetailPanel: React.FC<ShotDetailPanelProps> = ({ shot, characters, sce
       {/* Content */}
       <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
         {/* Keyframe preview */}
-        {shot.keyframeId ? (
+        {shot.keyframe_id ? (
           <Box
             sx={{
               width: '100%',
@@ -81,7 +81,7 @@ const ShotDetailPanel: React.FC<ShotDetailPanelProps> = ({ shot, characters, sce
             }}
           >
             <img
-              src={`/api/v1/assets/keyframes/${shot.keyframeId}/image`}
+              src={`/api/v1/assets/keyframes/${shot.keyframe_id}/image`}
               alt={`Shot ${shot.order + 1}`}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={(e) => {

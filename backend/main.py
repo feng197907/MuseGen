@@ -1,4 +1,11 @@
 """FastAPI application entry point."""
+import asyncio
+import sys
+
+# Windows compatibility for psycopg async
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

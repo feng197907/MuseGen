@@ -44,7 +44,7 @@ const TaskProgressCard: React.FC<TaskProgressCardProps> = ({ task }) => {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
         <Typography variant="body2" fontWeight={600}>
-          {TASK_TYPE_LABEL[task.taskType] || task.taskType}
+          {TASK_TYPE_LABEL[task.task_type] || task.task_type}
         </Typography>
         <Stack direction="row" spacing={0.5} alignItems="center">
           <Chip
@@ -54,7 +54,7 @@ const TaskProgressCard: React.FC<TaskProgressCardProps> = ({ task }) => {
             sx={{ height: 20, fontSize: 11 }}
           />
           <Typography variant="caption" color="text.secondary">
-            {formatRelative(task.createdAt)}
+            {formatRelative(task.created_at)}
           </Typography>
         </Stack>
       </Box>
@@ -68,21 +68,21 @@ const TaskProgressCard: React.FC<TaskProgressCardProps> = ({ task }) => {
             sx={{ borderRadius: 2, height: 5 }}
           />
           <Typography variant="caption" color="text.secondary" sx={{ mt: 0.25, display: 'block' }}>
-            {task.currentStep || (task.status === 'queued' ? '等待执行...' : '处理中...')}
+            {task.current_step || (task.status === 'queued' ? '等待执行...' : '处理中...')}
           </Typography>
         </Box>
       )}
 
       {/* Error */}
-      {task.status === 'failed' && task.errorMessage && (
-        <Tooltip title={task.errorMessage}>
+      {task.status === 'failed' && task.error_message && (
+        <Tooltip title={task.error_message}>
           <Typography
             variant="caption"
             color="error"
             noWrap
             sx={{ display: 'block', mt: 0.5, cursor: 'help' }}
           >
-            错误: {task.errorMessage}
+            错误: {task.error_message}
           </Typography>
         </Tooltip>
       )}
@@ -90,7 +90,7 @@ const TaskProgressCard: React.FC<TaskProgressCardProps> = ({ task }) => {
       {/* Success summary */}
       {task.status === 'done' && (
         <Typography variant="caption" color="success.main" sx={{ display: 'block', mt: 0.5 }}>
-          ✓ 完成 — {task.currentStep || '任务成功'}
+          ✓ 完成 — {task.current_step || '任务成功'}
         </Typography>
       )}
 

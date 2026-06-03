@@ -70,7 +70,7 @@ const CharacterGrid: React.FC<CharacterGridProps> = ({ characters, onSelect }) =
             <CardMedia
               component="img"
               height={180}
-              image={char.imageUrl || char.thumbnailUrl || '/placeholder-char.jpg'}
+              image={char.image_url || char.thumbnail_url || '/placeholder-char.jpg'}
               alt={char.name}
               sx={{ objectFit: 'cover', bgcolor: 'rgba(139,92,246,0.1)' }}
             />

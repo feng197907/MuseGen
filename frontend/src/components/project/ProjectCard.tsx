@@ -57,11 +57,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
       }}
     >
       <CardActionArea onClick={handleOpen} sx={{ flexGrow: 1 }}>
-        {project.coverImage ? (
+        {project.cover_image ? (
           <CardMedia
             component="img"
             height={140}
-            image={project.coverImage}
+            image={project.cover_image}
             alt={project.name}
             sx={{ objectFit: 'cover' }}
           />
@@ -104,7 +104,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) => {
       </CardActionArea>
       <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 1 }}>
         <Typography variant="caption" color="text.secondary">
-          {formatRelative(project.updatedAt)}
+          {formatRelative(project.updated_at)}
         </Typography>
         <Tooltip title="删除项目">
           <IconButton

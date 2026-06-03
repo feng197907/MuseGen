@@ -1,10 +1,12 @@
 """Celery Task: Generate character and scene assets via SDXL."""
 import asyncio
+import logging
 from app.tasks.celery_app import celery_app
 from app.services.image_service import generate_image
 from app.services.llm_service import generate_shot_prompt
 from app.core.storage import upload_bytes
 from app.utils.progress import update_progress
+from app.utils.prompt_templates import NEGATIVE_PROMPT_CHARACTER
 from app.core.database import async_session_factory
 from app.models.asset import Character, Scene, AssetStatus
 from sqlalchemy import select
@@ -49,8 +51,19 @@ async def _generate_all_assets(task_id: str, project_id: str) -> dict:
                 10 + int(40 * count / max(total, 1)),
                 f"Generating character: {char.name}",
             )
-            prompt = f"anime style, high quality, character portrait, {char.appearance}, {char.reference_prompt}, full body, detailed design, white background"
-            image_bytes = generate_image(prompt=prompt, width=768, height=1024)
+            # Build prompt: prioritize English reference_prompt (SD-optimized),
+            # supplement with appearance details. Use tag-weighting for emphasis.
+            # Note: ANIME_STYLE_PREFIX already provides the global style, so we
+            # only include content-specific tags here.
+            ref = char.reference_prompt.strip()
+            app = char.appearance.strip()
+            if ref and app:
+                prompt = f"(solo:1.2), (1girl:1.1), upper body portrait, simple background, ({ref}:1.3), ({app}:1.1)"
+            elif ref:
+                prompt = f"(solo:1.2), (1girl:1.1), upper body portrait, simple background, ({ref}:1.3)"
+            else:
+                prompt = f"(solo:1.2), (1girl:1.1), upper body portrait, simple background, ({app}:1.3)"
+            image_bytes = generate_image(prompt=prompt, negative_prompt=NEGATIVE_PROMPT_CHARACTER, width=512, height=768)
             url = upload_bytes(image_bytes, project_id, "character", "png", "image/png")
 
             async with async_session_factory() as session:
@@ -65,6 +78,9 @@ async def _generate_all_assets(task_id: str, project_id: str) -> dict:
 
             count += 1
         except Exception as e:
+            logging.getLogger(__name__).error(
+                f"Character asset generation failed for {char.id} ({char.name}): {e}", exc_info=True
+            )
             async with async_session_factory() as session:
                 stmt = select(Character).where(Character.id == char.id)
                 result = await session.execute(stmt)
@@ -82,8 +98,14 @@ async def _generate_all_assets(task_id: str, project_id: str) -> dict:
                 50 + int(40 * (count - len(characters)) / max(len(scenes), 1)),
                 f"Generating scene: {scene.name}",
             )
-            prompt = f"anime style, high quality, background art, {scene.reference_prompt}, {scene.setting}, {scene.time_of_day}, {scene.weather}, detailed environment, anime background"
-            image_bytes = generate_image(prompt=prompt, width=1024, height=576)
+            # Scene prompt: only content-specific tags, style comes from ANIME_STYLE_PREFIX
+            prompt_parts = [scene.reference_prompt, scene.setting]
+            if scene.time_of_day and scene.time_of_day != "白天":
+                prompt_parts.append(scene.time_of_day)
+            if scene.weather and scene.weather != "晴朗":
+                prompt_parts.append(scene.weather)
+            prompt = ", ".join(filter(None, prompt_parts)) + ", detailed environment, wide shot"
+            image_bytes = generate_image(prompt=prompt, width=512, height=512)
             url = upload_bytes(image_bytes, project_id, "scene", "png", "image/png")
 
             async with async_session_factory() as session:
@@ -98,6 +120,9 @@ async def _generate_all_assets(task_id: str, project_id: str) -> dict:
 
             count += 1
         except Exception as e:
+            logging.getLogger(__name__).error(
+                f"Scene asset generation failed for {scene.id} ({scene.name}): {e}", exc_info=True
+            )
             async with async_session_factory() as session:
                 stmt = select(Scene).where(Scene.id == scene.id)
                 result = await session.execute(stmt)
@@ -129,8 +154,15 @@ async def _regenerate_single_character(character_id: str):
         return
 
     try:
-        prompt = f"anime style, high quality, character portrait, {char.appearance}, {char.reference_prompt}, full body, detailed design, white background"
-        image_bytes = generate_image(prompt=prompt, width=768, height=1024)
+        ref = char.reference_prompt.strip()
+        app = char.appearance.strip()
+        if ref and app:
+            prompt = f"(solo:1.2), (1girl:1.1), upper body portrait, simple background, ({ref}:1.3), ({app}:1.1)"
+        elif ref:
+            prompt = f"(solo:1.2), (1girl:1.1), upper body portrait, simple background, ({ref}:1.3)"
+        else:
+            prompt = f"(solo:1.2), (1girl:1.1), upper body portrait, simple background, ({app}:1.3)"
+        image_bytes = generate_image(prompt=prompt, negative_prompt=NEGATIVE_PROMPT_CHARACTER, width=512, height=768)
         url = upload_bytes(image_bytes, char.project_id, "character", "png", "image/png")
 
         async with async_session_factory() as session:
@@ -142,7 +174,10 @@ async def _regenerate_single_character(character_id: str):
                 db_char.thumbnail_url = url
                 db_char.status = AssetStatus.done
                 await session.commit()
-    except Exception:
+    except Exception as e:
+        logging.getLogger(__name__).error(
+            f"Regenerate character failed for {character_id}: {e}", exc_info=True
+        )
         async with async_session_factory() as session:
             stmt = select(Character).where(Character.id == character_id)
             result = await session.execute(stmt)

@@ -2,34 +2,34 @@ import client from './client'
 import type { AsyncTask } from '../types/task'
 
 export interface ParseStoryRequest {
-  projectId: string
-  storyText: string
+  project_id: string
+  story_text: string
 }
 
 export interface GenerateAssetsRequest {
-  projectId: string
-  characterIds?: string[]
-  sceneIds?: string[]
+  project_id: string
+  character_ids?: string[]
+  scene_ids?: string[]
 }
 
 export interface GenerateKeyframesRequest {
-  projectId: string
-  shotIds?: string[]
+  project_id: string
+  shot_ids?: string[]
 }
 
 export interface GenerateAnimationRequest {
-  projectId: string
-  shotIds?: string[]
+  project_id: string
+  shot_ids?: string[]
 }
 
 export interface GenerateAudioRequest {
-  projectId: string
-  shotIds?: string[]
+  project_id: string
+  shot_ids?: string[]
 }
 
 export interface FullPipelineRequest {
-  projectId: string
-  storyText: string
+  project_id: string
+  story_text: string
 }
 
 export const generateApi = {

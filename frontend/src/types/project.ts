@@ -3,70 +3,70 @@ export interface Project {
   id: string
   name: string
   description: string
-  coverImage: string | null
+  cover_image: string | null
   status: 'draft' | 'in_progress' | 'completed'
-  storyText: string
-  createdAt: string
-  updatedAt: string
-  storyboardId: string | null
+  story_text: string
+  created_at: string
+  updated_at: string
+  storyboard_id: string | null
 }
 
 export interface ProjectCreateRequest {
   name: string
   description?: string
-  storyText?: string
+  story_text?: string
 }
 
 export interface ProjectUpdateRequest {
   name?: string
   description?: string
-  storyText?: string
-  coverImage?: string
+  story_text?: string
+  cover_image?: string
 }
 
 /** Storyboard is the sequenced container of shots */
 export interface Storyboard {
   id: string
-  projectId: string
+  project_id: string
   shots: Shot[]
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 /** A single shot/scene in the storyboard */
 export interface Shot {
   id: string
-  storyboardId: string
+  storyboard_id: string
   order: number
   title: string
   description: string
   dialogue: string
-  shotType: string
-  cameraMovement: string
+  shot_type: string
+  camera_movement: string
   duration: number
   mood: string
-  promptOverride: string | null
-  characterIds: string[]
-  sceneId: string | null
-  keyframeId: string | null
+  prompt_override: string | null
+  character_ids: string[]
+  scene_id: string | null
+  keyframe_id: string | null
   status: 'pending' | 'generating' | 'done' | 'failed'
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 export interface ShotUpdateRequest {
   title?: string
   description?: string
   dialogue?: string
-  shotType?: string
-  cameraMovement?: string
+  shot_type?: string
+  camera_movement?: string
   duration?: number
   mood?: string
-  promptOverride?: string
-  characterIds?: string[]
-  sceneId?: string
+  prompt_override?: string
+  character_ids?: string[]
+  scene_id?: string
 }
 
 export interface ShotReorderRequest {
-  shotIds: string[]
+  shot_ids: string[]
 }

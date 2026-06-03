@@ -1,11 +1,20 @@
 """Application configuration via pydantic-settings."""
+import os
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
+
+# Find .env: try backend dir first, then project root
+_env_paths = [
+    Path(__file__).resolve().parent.parent.parent / ".env",   # project root
+    Path(__file__).resolve().parent / ".env",                  # backend dir
+]
+_env_file = next((p for p in _env_paths if p.exists()), ".env")
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(_env_file),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -39,7 +48,7 @@ class Settings(BaseSettings):
     # ============================================================
     # Database
     # ============================================================
-    DATABASE_URL: str = "postgresql+asyncpg://user:pass@localhost:5432/animevideo"
+    DATABASE_URL: str = "postgresql+psycopg_async://user:pass@localhost:5432/animevideo"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

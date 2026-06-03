@@ -83,9 +83,9 @@ const ShotCard: React.FC<ShotCardProps> = ({ shot, selected, onSelect }) => {
             justifyContent: 'center',
           }}
         >
-          {shot.keyframeId ? (
+          {shot.keyframe_id ? (
             <img
-              src={`/api/v1/assets/keyframes/${shot.keyframeId}/thumbnail`}
+              src={`/api/v1/assets/keyframes/${shot.keyframe_id}/thumbnail`}
               alt="keyframe"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
@@ -112,7 +112,7 @@ const ShotCard: React.FC<ShotCardProps> = ({ shot, selected, onSelect }) => {
             {shot.description || '暂无描述'}
           </Typography>
           <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
-            <Chip label={shot.shotType || '中景'} size="small" sx={{ height: 18, fontSize: 10 }} />
+            <Chip label={shot.shot_type || '中景'} size="small" sx={{ height: 18, fontSize: 10 }} />
             <Chip label={`${shot.duration}s`} size="small" sx={{ height: 18, fontSize: 10 }} />
           </Box>
         </Box>

@@ -1,31 +1,31 @@
 /** Audio track tied to a project timeline */
 export interface AudioTrack {
   id: string
-  projectId: string
-  shotId: string | null
+  project_id: string
+  shot_id: string | null
   name: string
   type: 'voice' | 'bgm' | 'sfx'
-  audioUrl: string
+  audio_url: string
   duration: number
   volume: number
-  startTime: number
-  createdAt: string
+  start_time: number
+  created_at: string
 }
 
 /** Voice profile for a character */
 export interface VoiceProfile {
   id: string
-  characterId: string
+  character_id: string
   name: string
   provider: 'elevenlabs' | 'volcano'
-  voiceId: string
+  voice_id: string
   settings: VoiceSettings
-  createdAt: string
+  created_at: string
 }
 
 export interface VoiceSettings {
   stability: number
-  similarityBoost: number
+  similarity_boost: number
   style: number
   speed: number
 }

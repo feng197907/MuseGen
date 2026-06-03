@@ -10,10 +10,10 @@ from app.utils.prompt_templates import NEGATIVE_PROMPT_DEFAULT, ANIME_STYLE_PREF
 # ComfyUI helpers
 # ---------------------------------------------------------------------------
 
-COMFYUI_SDXL_WORKFLOW = {
-    "3": {"class_type": "KSampler", "inputs": {"seed": 0, "steps": 30, "cfg": 7.5, "sampler_name": "euler", "scheduler": "normal", "denoise": 1.0, "model": ["4", 0], "positive": ["6", 0], "negative": ["7", 0], "latent_image": ["5", 0]}},
-    "4": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": "dreamshaperXL_v21TurboDPMSDE.safetensors"}},
-    "5": {"class_type": "EmptyLatentImage", "inputs": {"width": 1024, "height": 576, "batch_size": 1}},
+COMFYUI_SD_WORKFLOW = {
+    "3": {"class_type": "KSampler", "inputs": {"seed": 0, "steps": 30, "cfg": 8.0, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1.0, "model": ["4", 0], "positive": ["6", 0], "negative": ["7", 0], "latent_image": ["5", 0]}},
+    "4": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": "v1-5-pruned-emaonly-fp16.safetensors"}},
+    "5": {"class_type": "EmptyLatentImage", "inputs": {"width": 512, "height": 512, "batch_size": 1}},
     "6": {"class_type": "CLIPTextEncode", "inputs": {"text": "PLACEHOLDER_POSITIVE", "clip": ["4", 1]}},
     "7": {"class_type": "CLIPTextEncode", "inputs": {"text": "PLACEHOLDER_NEGATIVE", "clip": ["4", 1]}},
     "8": {"class_type": "VAEDecode", "inputs": {"samples": ["3", 0], "vae": ["4", 2]}},
@@ -22,9 +22,9 @@ COMFYUI_SDXL_WORKFLOW = {
 
 
 def _build_comfyui_workflow(prompt: str, negative_prompt: str, width: int, height: int) -> dict:
-    """Build a ComfyUI workflow dict for SDXL generation."""
+    """Build a ComfyUI workflow dict for SD 1.5 generation."""
     import copy
-    wf = copy.deepcopy(COMFYUI_SDXL_WORKFLOW)
+    wf = copy.deepcopy(COMFYUI_SD_WORKFLOW)
     wf["3"]["inputs"]["seed"] = int(time.time() * 1000) % (2**32)
     wf["5"]["inputs"]["width"] = width
     wf["5"]["inputs"]["height"] = height
@@ -35,9 +35,17 @@ def _build_comfyui_workflow(prompt: str, negative_prompt: str, width: int, heigh
 
 def _comfyui_generate(workflow: dict) -> bytes:
     """Submit workflow to ComfyUI, poll until done, download result image."""
+    import logging
+    logger = logging.getLogger(__name__)
     base = settings.COMFYUI_BASE_URL.rstrip("/")
 
-    resp = httpx.post(f"{base}/prompt", json={"prompt": workflow, "client_id": str(uuid.uuid4())}, timeout=30)
+    resp = httpx.post(f"{base}/prompt", json={
+        "prompt": workflow,
+        "client_id": str(uuid.uuid4()),
+        "extra_data": {"extra_pnginfo": {}},
+    }, timeout=30)
+    if not resp.is_success:
+        logger.error(f"ComfyUI /prompt returned {resp.status_code}: {resp.text[:1000]}")
     resp.raise_for_status()
     prompt_id = resp.json()["prompt_id"]
 
@@ -142,7 +150,7 @@ def _comfyui_ipadapter(
     upload_resp.raise_for_status()
     ref_name = upload_resp.json()["name"]
 
-    wf = copy.deepcopy(COMFYUI_SDXL_WORKFLOW)
+    wf = copy.deepcopy(COMFYUI_SD_WORKFLOW)
     wf["10"] = {"class_type": "IPAdapter", "inputs": {"image": ref_name, "weight": ip_adapter_scale, "model": ["4", 0], "clip_vision": ["4", 0]}}
     wf["3"]["inputs"]["model"] = ["10", 0]
     wf["3"]["inputs"]["seed"] = int(time.time() * 1000) % (2**32)
